@@ -1,0 +1,9 @@
+# Ignore our output binary
+jira
+
+# Ignore generated coverage files
+coverage.out
+coverage.html
+
+# GoReleaser output
+dist/

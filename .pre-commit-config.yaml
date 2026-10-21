@@ -1,0 +1,27 @@
+repos:
+  - repo: local
+    hooks:
+      - id: gofmt
+        name: gofmt
+        entry: gofmt -s -w
+        language: system
+        types: [go]
+
+      - id: go-test
+        name: go test
+        entry: go test ./...
+        language: system
+        types: [go]
+        pass_filenames: false
+
+      - id: jq-validate
+        name: validate json (jq)
+        entry: jq empty
+        language: system
+        types: [json]
+
+      - id: yq-validate
+        name: validate yaml (yq)
+        entry: yq 'true'
+        language: system
+        types: [yaml]

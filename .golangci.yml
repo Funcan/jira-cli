@@ -1,0 +1,12 @@
+version: "2"
+
+linters:
+  settings:
+    errcheck:
+      # Writes to stdout/stderr via fmt.Fprint* practically never fail, and
+      # if they do there's nothing we can do about it, so checking every one
+      # adds noise without value.
+      exclude-functions:
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
