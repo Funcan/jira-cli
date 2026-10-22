@@ -5,7 +5,7 @@ BINARY = "jira"
 default: format build lint test
 
 build:
-	go build -o $(BINARY) main.go 
+	go build -o $(BINARY) .
 
 test:
 	go test -cover ./...

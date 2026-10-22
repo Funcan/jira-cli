@@ -39,7 +39,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("wiki-lint %s (%s from %s)\n", Version, Commit, Date)
+		fmt.Printf("jira %s (%s from %s)\n", Version, Commit, Date)
 	},
 }
 
