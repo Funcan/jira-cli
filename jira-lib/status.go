@@ -51,10 +51,12 @@ func StatusRank(s Status) StatusGroup {
 
 // SortStatuses sorts statuses by StatusRank, then by name within a rank.
 func SortStatuses(statuses []Status) {
-	slices.SortStableFunc(statuses, func(a, b Status) int {
-		if r := int(StatusRank(a)) - int(StatusRank(b)); r != 0 {
-			return r
-		}
-		return strings.Compare(a.Name, b.Name)
-	})
+	slices.SortStableFunc(statuses, compareStatuses)
+}
+
+func compareStatuses(a, b Status) int {
+	if r := int(StatusRank(a)) - int(StatusRank(b)); r != 0 {
+		return r
+	}
+	return strings.Compare(a.Name, b.Name)
 }

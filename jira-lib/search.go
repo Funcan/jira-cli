@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Issue is a JIRA issue, with the subset of fields this package understands.
@@ -21,6 +22,30 @@ type IssueFields struct {
 	Status    Status    `json:"status"`
 	IssueType IssueType `json:"issuetype"`
 	Priority  *Priority `json:"priority"`
+	Project   Project   `json:"project"`
+	Created   Time      `json:"created"`
+	Updated   Time      `json:"updated"`
+}
+
+// Project identifies the project an issue belongs to.
+type Project struct {
+	Key  string `json:"key"`
+	Name string `json:"name"`
+}
+
+// Time is a timestamp in the format JIRA uses in issue fields.
+type Time struct {
+	time.Time
+}
+
+// UnmarshalJSON parses a JIRA timestamp, e.g. "2026-10-08T16:34:30.000+0000".
+func (t *Time) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil || s == "" {
+		return err
+	}
+	t.Time, err = time.Parse("2006-01-02T15:04:05.000-0700", s)
+	return err
 }
 
 // IssueType is the type of an issue, e.g. Story or Bug.
@@ -32,6 +57,15 @@ type IssueType struct {
 // in which case the issue's Priority is nil.
 type Priority struct {
 	Name string `json:"name"`
+}
+
+// Priorities returns all priorities defined on the instance, highest first.
+func (c *Client) Priorities(ctx context.Context) ([]Priority, error) {
+	var ps []Priority
+	if err := c.Do(ctx, http.MethodGet, "rest/api/2/priority", nil, nil, &ps); err != nil {
+		return nil, err
+	}
+	return ps, nil
 }
 
 // Search returns all issues matching jql, fetching the given fields.

@@ -15,6 +15,7 @@ var (
 	mineClosed   bool
 	mineAll      bool
 	mineStatuses []string
+	mineSort     string
 )
 
 var mineCmd = &cobra.Command{
@@ -43,14 +44,7 @@ that aren't closed (i.e. not in the Done status category) are listed.`,
 		default: // --open
 			clauses = append(clauses, "statusCategory != Done")
 		}
-		jql := strings.Join(clauses, " AND ") + " ORDER BY priority DESC, key ASC"
-
-		issues, err := c.Search(cmd.Context(), jql, issueListFields)
-		if err != nil {
-			return err
-		}
-		printIssuesByStatus(cmd.OutOrStdout(), c, issues)
-		return nil
+		return listIssues(cmd, c, strings.Join(clauses, " AND "), mineSort)
 	},
 }
 
@@ -60,6 +54,10 @@ func init() {
 	mineCmd.Flags().BoolVar(&mineClosed, "closed", false, "list only closed tickets")
 	mineCmd.Flags().StringArrayVar(&mineStatuses, "status", nil, "list only tickets in this status (repeatable; matches any)")
 	mineCmd.Flags().BoolVar(&mineAll, "all", false, "list tickets in any status")
+	mineCmd.Flags().StringVar(&mineSort, "sort", defaultSort, `comma separated sort fields: opened, updated, status, priority, type,
+project. Prefix with "+" for ascending or "-" for descending; otherwise
+dates and priority sort descending, the rest ascending. Grouped by status
+if status is first`)
 	mineCmd.MarkFlagsMutuallyExclusive("open", "closed", "all", "status")
 	rootCmd.AddCommand(mineCmd)
 }

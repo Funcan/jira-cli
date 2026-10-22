@@ -20,13 +20,8 @@ var sprintCmd = &cobra.Command{
 			return err
 		}
 
-		jql := fmt.Sprintf(`project = %s AND assignee = currentUser() AND sprint in openSprints() ORDER BY priority DESC, key ASC`, jqlString(p.Project))
-		issues, err := c.Search(cmd.Context(), jql, issueListFields)
-		if err != nil {
-			return err
-		}
-		printIssuesByStatus(cmd.OutOrStdout(), c, issues)
-		return nil
+		jql := fmt.Sprintf(`project = %s AND assignee = currentUser() AND sprint in openSprints()`, jqlString(p.Project))
+		return listIssues(cmd, c, jql, defaultSort)
 	},
 }
 
