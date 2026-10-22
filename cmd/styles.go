@@ -12,7 +12,12 @@ import (
 type Theme struct {
 	Heading     lipgloss.Style
 	TableHeader lipgloss.Style
+	FieldName   lipgloss.Style
 	IssueKey    lipgloss.Style
+	Summary     lipgloss.Style
+	// CommentAuthor and CommentDate make up each comment's header line.
+	CommentAuthor lipgloss.Style
+	CommentDate   lipgloss.Style
 	// IssueTypes styles issue type names, keyed by lower-cased name.
 	IssueTypes   map[string]lipgloss.Style
 	PriorityHigh lipgloss.Style
@@ -29,9 +34,13 @@ func newTheme(p colorprofile.Profile) Theme {
 		return lipgloss.NewStyle().Foreground(c(lipgloss.ANSIColor(ansi), lipgloss.ANSIColor(ansi256), lipgloss.Color(truecolor)))
 	}
 	return Theme{
-		Heading:     lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Yellow),
-		TableHeader: lipgloss.NewStyle().Faint(true),
-		IssueKey:    lipgloss.NewStyle().Foreground(lipgloss.Cyan),
+		Heading:       lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Yellow),
+		TableHeader:   lipgloss.NewStyle().Faint(true),
+		FieldName:     lipgloss.NewStyle().Faint(true),
+		IssueKey:      lipgloss.NewStyle().Foreground(lipgloss.Cyan),
+		Summary:       lipgloss.NewStyle().Bold(true),
+		CommentAuthor: lipgloss.NewStyle().Bold(true),
+		CommentDate:   lipgloss.NewStyle().Faint(true),
 		IssueTypes: map[string]lipgloss.Style{
 			"story":      fg(2, 108, "#a3be8c"),
 			"task":       fg(4, 110, "#81a1c1"),

@@ -38,13 +38,17 @@ type Time struct {
 	time.Time
 }
 
-// UnmarshalJSON parses a JIRA timestamp, e.g. "2026-10-08T16:34:30.000+0000".
+// TimeFormat is the layout of timestamps in JIRA issue fields, e.g.
+// "2026-10-08T16:34:30.000+0000".
+const TimeFormat = "2006-01-02T15:04:05.000-0700"
+
+// UnmarshalJSON parses a JIRA timestamp.
 func (t *Time) UnmarshalJSON(b []byte) error {
 	s, err := strconv.Unquote(string(b))
 	if err != nil || s == "" {
 		return err
 	}
-	t.Time, err = time.Parse("2006-01-02T15:04:05.000-0700", s)
+	t.Time, err = time.Parse(TimeFormat, s)
 	return err
 }
 
