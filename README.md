@@ -9,5 +9,6 @@ Usage
 - `jira help [command]` - show help for jira or a subcommand
 - `jira completion <shell>` - generate a shell autocompletion script
 - `jira sprint [--project X]` - list my tickets in the current sprint, grouped by status
+- `jira mine [--project X] [--open | --closed | --all | --status S ...]` - list my open tickets, grouped by status; `--open` (the default) for open only, `--closed` for closed only, `--all` for any status, `--status` (repeatable) for specific statuses
 - `jira version` - print the version, commit and build date
 - `jira whoami [--instance X | --project X]` - show who you are authenticated as on each instance in `~/.jira.yaml` (or just one), to validate the config

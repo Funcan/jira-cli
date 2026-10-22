@@ -87,8 +87,22 @@ func (c *Client) Do(ctx context.Context, method, path string, query url.Values, 
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		msg, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		return fmt.Errorf("%s %s: %s: %s", method, u, resp.Status, strings.TrimSpace(string(msg)))
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		msg := strings.TrimSpace(string(body))
+		// JIRA usually explains the failure in a JSON error body.
+		var jiraErr struct {
+			ErrorMessages []string          `json:"errorMessages"`
+			Errors        map[string]string `json:"errors"`
+		}
+		if json.Unmarshal(body, &jiraErr) == nil && len(jiraErr.ErrorMessages)+len(jiraErr.Errors) > 0 {
+			msgs := jiraErr.ErrorMessages
+			for field, m := range jiraErr.Errors {
+				msgs = append(msgs, field+": "+m)
+			}
+			msg = strings.Join(msgs, "; ")
+		}
+		u.RawQuery = ""
+		return fmt.Errorf("%s %s: %d %s: %s", method, u, resp.StatusCode, http.StatusText(resp.StatusCode), msg)
 	}
 	if out == nil {
 		return nil
