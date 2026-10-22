@@ -96,6 +96,11 @@ func (c *Client) Do(ctx context.Context, method, path string, query url.Values, 
 	return json.NewDecoder(resp.Body).Decode(out)
 }
 
+// BrowseURL returns the URL to view an issue in a web browser.
+func (c *Client) BrowseURL(key string) string {
+	return c.baseURL.JoinPath("browse", key).String()
+}
+
 // User is a JIRA user.
 type User struct {
 	Name         string `json:"name"`

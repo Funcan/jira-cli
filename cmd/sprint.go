@@ -2,8 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"text/tabwriter"
+	"os"
+	"strings"
 
+	"charm.land/lipgloss/v2"
+	"charm.land/lipgloss/v2/table"
+	"github.com/charmbracelet/colorprofile"
 	"github.com/spf13/cobra"
 
 	jira "jira-cli/jira-lib"
@@ -38,23 +42,40 @@ var sprintCmd = &cobra.Command{
 		}
 		jira.SortStatuses(statuses)
 
-		out := cmd.OutOrStdout()
+		// Strips all styling and links when not writing to a terminal.
+		out := colorprofile.NewWriter(cmd.OutOrStdout(), os.Environ())
+		theme := newTheme(out.Profile)
 		for i, status := range statuses {
 			if i > 0 {
 				fmt.Fprintln(out)
 			}
-			fmt.Fprintln(out, status.Name)
-			tw := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
-			fmt.Fprintln(tw, "KEY\tTYPE\tPRIORITY\tSUMMARY")
+			fmt.Fprintln(out, theme.Heading.Render(status.Name))
+			t := table.New().
+				BorderTop(false).BorderBottom(false).BorderLeft(false).BorderRight(false).
+				BorderHeader(false).BorderColumn(false).
+				Headers("KEY", "TYPE", "PRIORITY", "SUMMARY").
+				StyleFunc(func(row, col int) lipgloss.Style {
+					s := lipgloss.NewStyle()
+					if row == table.HeaderRow {
+						s = theme.TableHeader
+					}
+					if col < 3 {
+						s = s.PaddingRight(2)
+					}
+					return s
+				})
 			for _, issue := range byStatus[status.Name] {
 				priority := ""
 				if issue.Fields.Priority != nil {
 					priority = issue.Fields.Priority.Name
 				}
-				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", issue.Key, issue.Fields.IssueType.Name, priority, issue.Fields.Summary)
+				key := theme.IssueKey.Hyperlink(c.BrowseURL(issue.Key)).Render(issue.Key)
+				t.Row(key, theme.IssueType(issue.Fields.IssueType.Name), theme.Priority(priority), issue.Fields.Summary)
 			}
-			if err := tw.Flush(); err != nil {
-				return err
+			// The table pads every cell to its column width, including the
+			// last, which leaves trailing whitespace on each line.
+			for _, line := range strings.Split(t.Render(), "\n") {
+				fmt.Fprintln(out, strings.TrimRight(line, " "))
 			}
 		}
 		return nil

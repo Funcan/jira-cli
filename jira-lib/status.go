@@ -18,30 +18,41 @@ type StatusCategory struct {
 	Name string `json:"name"`
 }
 
-// StatusRank orders statuses logically: not started, in progress, blocked,
-// then done. Lower ranks come first.
+// StatusGroup is a logical grouping of statuses, in the order they should be
+// shown.
+type StatusGroup int
+
+const (
+	StatusToDo StatusGroup = iota
+	StatusInProgress
+	StatusBlocked
+	StatusDone
+)
+
+// StatusRank returns the logical group of a status: not started, in
+// progress, blocked, or done. Lower ranks come first.
 //
 // JIRA has no "blocked" category - blocked statuses are filed under To Do or
 // In Progress depending on the workflow - so they are recognised by name.
-func StatusRank(s Status) int {
+func StatusRank(s Status) StatusGroup {
 	name := strings.ToLower(s.Name)
 	if strings.Contains(name, "block") || strings.Contains(name, "on hold") {
-		return 2
+		return StatusBlocked
 	}
 	switch s.StatusCategory.Key {
 	case "new":
-		return 0
+		return StatusToDo
 	case "done":
-		return 3
+		return StatusDone
 	default:
-		return 1
+		return StatusInProgress
 	}
 }
 
 // SortStatuses sorts statuses by StatusRank, then by name within a rank.
 func SortStatuses(statuses []Status) {
 	slices.SortStableFunc(statuses, func(a, b Status) int {
-		if r := StatusRank(a) - StatusRank(b); r != 0 {
+		if r := int(StatusRank(a)) - int(StatusRank(b)); r != 0 {
 			return r
 		}
 		return strings.Compare(a.Name, b.Name)
