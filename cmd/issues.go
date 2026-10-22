@@ -18,6 +18,12 @@ import (
 // defaultSort is the issue list order when none is given.
 const defaultSort = "status,priority"
 
+// sortFlagUsage is the help text for --sort flags.
+const sortFlagUsage = `comma separated sort fields: opened, updated, status, priority, type,
+project. Prefix with "+" for ascending or "-" for descending; otherwise
+dates and priority sort descending, the rest ascending. Grouped by status
+if status is first`
+
 // listIssues searches for issues matching jql, sorts them by sortSpec (see
 // jira.ParseSort) and prints them. If the first sort field is status, issues
 // are printed as one table per status; otherwise as a single table with a
