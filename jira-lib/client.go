@@ -60,10 +60,12 @@ func (c *Client) isCloud() bool {
 	return strings.HasSuffix(c.baseURL.Hostname(), ".atlassian.net")
 }
 
-// Do sends a request to the REST API path (e.g. "rest/api/2/myself") and
-// decodes a JSON response into out, if out is non-nil.
-func (c *Client) Do(ctx context.Context, method, path string, body io.Reader, out any) error {
+// Do sends a request to the REST API path (e.g. "rest/api/2/myself") with
+// optional query parameters, and decodes a JSON response into out, if out is
+// non-nil.
+func (c *Client) Do(ctx context.Context, method, path string, query url.Values, body io.Reader, out any) error {
 	u := c.baseURL.JoinPath(path)
+	u.RawQuery = query.Encode()
 	req, err := http.NewRequestWithContext(ctx, method, u.String(), body)
 	if err != nil {
 		return err
@@ -105,7 +107,7 @@ type User struct {
 // Myself returns the currently authenticated user.
 func (c *Client) Myself(ctx context.Context) (*User, error) {
 	var u User
-	if err := c.Do(ctx, http.MethodGet, "rest/api/2/myself", nil, &u); err != nil {
+	if err := c.Do(ctx, http.MethodGet, "rest/api/2/myself", nil, nil, &u); err != nil {
 		return nil, err
 	}
 	return &u, nil
