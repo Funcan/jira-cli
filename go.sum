@@ -1,7 +1,5 @@
 charm.land/lipgloss/v2 v2.0.6 h1:EaGKeuA8FvF+v2BT5VmZd2LoYLaMZJXA5n34th8nCIQ=
 charm.land/lipgloss/v2 v2.0.6/go.mod h1:ipDDJNSGa1hlwDtSfW1s2/xR8Vdhbut4PXh2zEKZd0Q=
-github.com/Funcan/j2m v0.0.1 h1:2oYP+CiYcCeKDEvaT+LLlgRhrW3uB+0I2JWWU1nToq4=
-github.com/Funcan/j2m v0.0.1/go.mod h1:ZFOiIa42r+BJ3fnI9BfaS3kfXHp3jSxh0rFEaYx5d6g=
 github.com/Funcan/j2m v0.0.2 h1:BL/0eCe+jbJ2f9vQ8Ihb0oHr5z7d+fCSlrjw0QYQ7vM=
 github.com/Funcan/j2m v0.0.2/go.mod h1:ZFOiIa42r+BJ3fnI9BfaS3kfXHp3jSxh0rFEaYx5d6g=
 github.com/aymanbagabas/go-udiff v0.4.1 h1:OEIrQ8maEeDBXQDoGCbbTTXYJMYRCRO1fnodZ12Gv5o=
