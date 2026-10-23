@@ -133,6 +133,15 @@ func (c *Client) AddWatcher(ctx context.Context, key string, u *User) error {
 	return c.Do(ctx, http.MethodPost, "rest/api/2/issue/"+url.PathEscape(key)+"/watchers", nil, body, nil)
 }
 
+// AddComment adds a comment, in JIRA wiki markup, to an issue.
+func (c *Client) AddComment(ctx context.Context, key, body string) error {
+	b, err := jsonBody(map[string]string{"body": body})
+	if err != nil {
+		return err
+	}
+	return c.Do(ctx, http.MethodPost, "rest/api/2/issue/"+url.PathEscape(key)+"/comment", nil, b, nil)
+}
+
 // RemoveWatcher removes a user as a watcher of an issue.
 func (c *Client) RemoveWatcher(ctx context.Context, key string, u *User) error {
 	query := url.Values{"username": {u.Name}}

@@ -16,6 +16,7 @@ Usage
 - `jira show <key|url>` - show a single ticket; fields from the project's `show_fields` in `~/.jira.yaml`
 - `jira edit <key|url> [--dry-run]` - edit a ticket as Markdown in `$VISUAL`/`$EDITOR`: fields as YAML front matter (the project's `edit_fields`), description as the body
 - `jira create [project] [--type T] [--dry-run]` - create a ticket the same way, from a template of the project's `create_fields`, `create_defaults` and required fields
+- `jira comment <key|url>` - write a comment in `$VISUAL`/`$EDITOR` and post it; nothing is posted if the editor fails or the file is left empty
 - `jira assign <key|url> [--user U] [--team T] [--dry-run]` - assign a ticket to you (the project's `me` fields), or to a user and/or team
 - `jira delete <key|url> [--yes] [--subtasks]` - permanently delete a ticket, after confirmation
 - `jira version` - print the version, commit and build date
