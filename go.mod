@@ -1,4 +1,4 @@
-module jira-cli
+module github.com/Funcan/jira-cli
 
 go 1.27.2
 

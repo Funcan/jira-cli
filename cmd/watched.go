@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	jira "jira-cli/jira-lib"
+	jira "github.com/Funcan/jira-cli/jira-lib"
 )
 
 var (

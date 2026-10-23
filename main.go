@@ -1,7 +1,7 @@
 package main
 
 import (
-	"jira-cli/cmd"
+	"github.com/Funcan/jira-cli/cmd"
 )
 
 func main() {

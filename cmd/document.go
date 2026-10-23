@@ -8,7 +8,7 @@ import (
 
 	"go.yaml.in/yaml/v3"
 
-	jira "jira-cli/jira-lib"
+	jira "github.com/Funcan/jira-cli/jira-lib"
 )
 
 // A document is the Markdown file edited by `jira edit` and `jira create`:

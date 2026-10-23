@@ -11,8 +11,8 @@ import (
 	"github.com/charmbracelet/colorprofile"
 	"github.com/spf13/cobra"
 
-	jira "jira-cli/jira-lib"
-	"jira-cli/wiki2markdown2wiki"
+	jira "github.com/Funcan/jira-cli/jira-lib"
+	"github.com/Funcan/jira-cli/wiki2markdown2wiki"
 )
 
 var editDryRun bool

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	jira "jira-cli/jira-lib"
+	jira "github.com/Funcan/jira-cli/jira-lib"
 )
 
 func TestDocumentRoundTrip(t *testing.T) {

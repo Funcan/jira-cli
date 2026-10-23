@@ -16,8 +16,8 @@ import (
 	"github.com/funcan/showmd"
 	"github.com/spf13/cobra"
 
-	jira "jira-cli/jira-lib"
-	"jira-cli/wiki2markdown2wiki"
+	jira "github.com/Funcan/jira-cli/jira-lib"
+	"github.com/Funcan/jira-cli/wiki2markdown2wiki"
 )
 
 // showFields are the fields shown, in order, between the summary and the
