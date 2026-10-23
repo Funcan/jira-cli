@@ -26,6 +26,9 @@ type ProjectConfig struct {
 	Teams    []string `yaml:"teams"`
 	// ShowFields are the fields shown by `jira show`.
 	ShowFields []string `yaml:"show_fields"`
+	// ShowSections are the long text fields `jira show` renders as Markdown
+	// sections after the field table.
+	ShowSections []string `yaml:"show_sections"`
 	// EditFields are the fields in the `jira edit` template.
 	EditFields []string `yaml:"edit_fields"`
 	// CreateFields are the fields in the `jira create` template.

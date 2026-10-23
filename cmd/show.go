@@ -28,13 +28,19 @@ var showFields = []string{
 	"created", "updated", "labels", "components", "fixVersions", "parent",
 }
 
+// showSections are the long text fields shown, in order, after the field
+// table as Markdown sections with their own heading, for projects without
+// show_sections in ~/.jira.yaml. Empty fields are omitted.
+var showSections = []string{"description"}
+
 var showCmd = &cobra.Command{
 	Use:   "show <key|url>",
 	Short: "Show a single issue",
 	Long: `Show a single issue, given its key (e.g. ABC-123) or its URL. Keys for
 projects not in ~/.jira.yaml are looked up on the default project's instance.
 The fields shown are the project's show_fields in ~/.jira.yaml (field IDs or
-display names), or a built-in list.`,
+display names), or a built-in list. Long text fields are shown after them as
+Markdown sections: the project's show_sections, or just the description.`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := jira.LoadConfig("")
@@ -49,9 +55,14 @@ display names), or a built-in list.`,
 		if err != nil {
 			return err
 		}
-		names := issueProject(cfg, key).ShowFields
+		project := issueProject(cfg, key)
+		names := project.ShowFields
 		if len(names) == 0 {
 			names = showFields
+		}
+		sections := project.ShowSections
+		if len(sections) == 0 {
+			sections = showSections
 		}
 		// Configured fields may be display names, which can only be mapped
 		// to IDs once we have the issue's field names.
@@ -104,10 +115,12 @@ display names), or a built-in list.`,
 			fmt.Fprintln(out, strings.TrimRight(line, " "))
 		}
 
-		if desc := strings.TrimSpace(wikiToMarkdown(fieldText(issue.Fields["description"]))); desc != "" {
-			fmt.Fprintln(out)
-			fmt.Fprintln(out, theme.Heading.Render(issue.Names["description"]))
-			fmt.Fprintln(out, md(desc))
+		for _, f := range showFieldIDs(issue, sections) {
+			if text := strings.TrimSpace(wikiToMarkdown(fieldText(issue.Fields[f]))); text != "" {
+				fmt.Fprintln(out)
+				fmt.Fprintln(out, theme.Heading.Render(issue.Names[f]))
+				fmt.Fprintln(out, md(text))
+			}
 		}
 
 		if len(comments) > 0 {
