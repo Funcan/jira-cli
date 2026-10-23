@@ -32,6 +32,8 @@ type ProjectConfig struct {
 	CreateFields []string `yaml:"create_fields"`
 	// CreateDefaults pre-fills fields in the `jira create` template.
 	CreateDefaults map[string]any `yaml:"create_defaults"`
+	// Me holds the fields `jira assign` sets to assign an issue to you.
+	Me map[string]any `yaml:"me"`
 }
 
 // Defaults holds the project and team to use when none is specified.

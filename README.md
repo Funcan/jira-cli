@@ -13,5 +13,6 @@ Usage
 - `jira show <key|url>` - show a single ticket; fields from the project's `show_fields` in `~/.jira.yaml`
 - `jira edit <key|url> [--dry-run]` - edit a ticket as Markdown in `$VISUAL`/`$EDITOR`: fields as YAML front matter (the project's `edit_fields`), description as the body
 - `jira create [project] [--type T] [--dry-run]` - create a ticket the same way, from a template of the project's `create_fields`, `create_defaults` and required fields
+- `jira assign <key|url> [--user U] [--team T] [--dry-run]` - assign a ticket to you (the project's `me` fields), or to a user and/or team
 - `jira version` - print the version, commit and build date
 - `jira whoami [--instance X | --project X]` - show who you are authenticated as on each instance in `~/.jira.yaml` (or just one), to validate the config
