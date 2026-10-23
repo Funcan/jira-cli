@@ -1,5 +1,5 @@
 # Ignore our output binary
-jira
+/jira
 
 # Ignore generated coverage files
 coverage.out
