@@ -29,6 +29,13 @@ func (c *Client) UpdateIssue(ctx context.Context, key string, fields map[string]
 	return c.Do(ctx, http.MethodPut, "rest/api/2/issue/"+url.PathEscape(key), nil, body, nil)
 }
 
+// DeleteIssue permanently deletes an issue. JIRA refuses to delete an issue
+// with subtasks unless subtasks is true, which deletes them too.
+func (c *Client) DeleteIssue(ctx context.Context, key string, subtasks bool) error {
+	query := url.Values{"deleteSubtasks": {fmt.Sprint(subtasks)}}
+	return c.Do(ctx, http.MethodDelete, "rest/api/2/issue/"+url.PathEscape(key), query, nil, nil)
+}
+
 // CreateIssue creates an issue and returns its key. Fields must include the
 // project and issue type.
 func (c *Client) CreateIssue(ctx context.Context, fields map[string]any) (string, error) {
