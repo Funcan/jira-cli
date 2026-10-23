@@ -3,6 +3,15 @@ JIRA CLI
 
 A CLI for doing day-to-day JIRA operations via the terminal
 
+Install
+-------
+
+```sh
+go install github.com/Funcan/jira-cli/cmd/jira@latest
+```
+
+or build `./jira` from a checkout with `make build`.
+
 Usage
 -----
 
