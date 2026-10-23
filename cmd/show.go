@@ -17,7 +17,8 @@ import (
 )
 
 // showFields are the fields shown, in order, between the summary and the
-// description. Empty fields are omitted.
+// description, for projects without show_fields in ~/.jira.yaml. Empty fields
+// are omitted.
 var showFields = []string{
 	"issuetype", "status", "priority", "assignee", "reporter",
 	"created", "updated", "labels", "components", "fixVersions", "parent",
@@ -27,7 +28,9 @@ var showCmd = &cobra.Command{
 	Use:   "show <key|url>",
 	Short: "Show a single issue",
 	Long: `Show a single issue, given its key (e.g. ABC-123) or its URL. Keys for
-projects not in ~/.jira.yaml are looked up on the default project's instance.`,
+projects not in ~/.jira.yaml are looked up on the default project's instance.
+The fields shown are the project's show_fields in ~/.jira.yaml (field IDs or
+display names), or a built-in list.`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := jira.LoadConfig("")
@@ -42,7 +45,13 @@ projects not in ~/.jira.yaml are looked up on the default project's instance.`,
 		if err != nil {
 			return err
 		}
-		issue, err := c.GetIssue(cmd.Context(), key, append([]string{"summary", "description"}, showFields...))
+		names := issueProject(cfg, key).ShowFields
+		if len(names) == 0 {
+			names = showFields
+		}
+		// Configured fields may be display names, which can only be mapped
+		// to IDs once we have the issue's field names.
+		issue, err := c.GetIssue(cmd.Context(), key, []string{"*all"})
 		if err != nil {
 			return err
 		}
@@ -67,7 +76,7 @@ projects not in ~/.jira.yaml are looked up on the default project's instance.`,
 				}
 				return lipgloss.NewStyle()
 			})
-		for _, f := range showFields {
+		for _, f := range showFieldIDs(issue, names) {
 			value := fieldText(issue.Fields[f])
 			if value == "" {
 				continue
@@ -110,6 +119,28 @@ projects not in ~/.jira.yaml are looked up on the default project's instance.`,
 		}
 		return nil
 	},
+}
+
+// showFieldIDs maps field names (IDs or display names, case-insensitively)
+// to the IDs of the issue's fields, skipping names that don't match.
+func showFieldIDs(issue *jira.RawIssue, names []string) []string {
+	var ids []string
+	for _, name := range names {
+		var match string
+		for id, n := range issue.Names {
+			if strings.EqualFold(id, name) {
+				match = id
+				break
+			}
+			if strings.EqualFold(n, name) && (match == "" || id < match) {
+				match = id
+			}
+		}
+		if match != "" {
+			ids = append(ids, match)
+		}
+	}
+	return ids
 }
 
 // fieldText renders a raw field value as text. It handles the shapes JIRA

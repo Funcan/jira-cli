@@ -18,10 +18,20 @@ type InstanceConfig struct {
 }
 
 // ProjectConfig describes a JIRA project and the instance it lives on.
+//
+// The field lists name fields by ID or display name, case-insensitively.
 type ProjectConfig struct {
 	Project  string   `yaml:"project"`
 	Instance string   `yaml:"instance"`
 	Teams    []string `yaml:"teams"`
+	// ShowFields are the fields shown by `jira show`.
+	ShowFields []string `yaml:"show_fields"`
+	// EditFields are the fields in the `jira edit` template.
+	EditFields []string `yaml:"edit_fields"`
+	// CreateFields are the fields in the `jira create` template.
+	CreateFields []string `yaml:"create_fields"`
+	// CreateDefaults pre-fills fields in the `jira create` template.
+	CreateDefaults map[string]any `yaml:"create_defaults"`
 }
 
 // Defaults holds the project and team to use when none is specified.
