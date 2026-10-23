@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 
 	jira "jira-cli/jira-lib"
+	"jira-cli/wiki2markdown2wiki"
 )
 
 // showFields are the fields shown, in order, between the summary and the
@@ -99,7 +100,7 @@ display names), or a built-in list.`,
 			fmt.Fprintln(out, strings.TrimRight(line, " "))
 		}
 
-		if desc := strings.TrimSpace(fieldText(issue.Fields["description"])); desc != "" {
+		if desc := strings.TrimSpace(wikiToMarkdown(fieldText(issue.Fields["description"]))); desc != "" {
 			fmt.Fprintln(out)
 			fmt.Fprintln(out, theme.Heading.Render(issue.Names["description"]))
 			fmt.Fprintln(out, desc)
@@ -114,7 +115,7 @@ display names), or a built-in list.`,
 				}
 				fmt.Fprintln(out, theme.CommentAuthor.Render(comment.Author.DisplayName)+"  "+
 					theme.CommentDate.Render(comment.Created.Local().Format("2006-01-02 15:04")))
-				fmt.Fprintln(out, strings.TrimSpace(comment.Body))
+				fmt.Fprintln(out, strings.TrimSpace(wikiToMarkdown(comment.Body)))
 			}
 		}
 		return nil
@@ -141,6 +142,12 @@ func showFieldIDs(issue *jira.RawIssue, names []string) []string {
 		}
 	}
 	return ids
+}
+
+// wikiToMarkdown converts JIRA wiki markup to Markdown. Data Center text
+// often has Windows line endings.
+func wikiToMarkdown(wiki string) string {
+	return wiki2markdown2wiki.WikiToMarkdown(strings.ReplaceAll(wiki, "\r\n", "\n"))
 }
 
 // fieldText renders a raw field value as text. It handles the shapes JIRA

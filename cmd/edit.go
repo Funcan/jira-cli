@@ -85,9 +85,7 @@ workflow transition.`,
 		}
 		var description string
 		_ = json.Unmarshal(issue.Fields["description"], &description)
-		// Data Center descriptions often have Windows line endings.
-		description = strings.ReplaceAll(description, "\r\n", "\n")
-		text, err := renderDocument(header, docFields, wiki2markdown2wiki.WikiToMarkdown(description))
+		text, err := renderDocument(header, docFields, wikiToMarkdown(description))
 		if err != nil {
 			return err
 		}
