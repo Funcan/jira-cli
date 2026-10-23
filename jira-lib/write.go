@@ -119,6 +119,29 @@ func (c *Client) UserRef(u *User) map[string]string {
 	return map[string]string{"name": u.Name}
 }
 
+// AddWatcher adds a user as a watcher of an issue. Adding an existing
+// watcher succeeds.
+func (c *Client) AddWatcher(ctx context.Context, key string, u *User) error {
+	id := u.Name
+	if c.isCloud() {
+		id = u.AccountID
+	}
+	body, err := jsonBody(id)
+	if err != nil {
+		return err
+	}
+	return c.Do(ctx, http.MethodPost, "rest/api/2/issue/"+url.PathEscape(key)+"/watchers", nil, body, nil)
+}
+
+// RemoveWatcher removes a user as a watcher of an issue.
+func (c *Client) RemoveWatcher(ctx context.Context, key string, u *User) error {
+	query := url.Values{"username": {u.Name}}
+	if c.isCloud() {
+		query = url.Values{"accountId": {u.AccountID}}
+	}
+	return c.Do(ctx, http.MethodDelete, "rest/api/2/issue/"+url.PathEscape(key)+"/watchers", query, nil, nil)
+}
+
 var htmlTagRE = regexp.MustCompile(`<[^>]*>`)
 
 // FindTeam returns the ID of the team with the given name, as the team field
