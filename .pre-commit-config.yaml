@@ -14,6 +14,13 @@ repos:
         types: [go]
         pass_filenames: false
 
+      - id: go-mod-tidy
+        name: go mod tidy
+        entry: go mod tidy -diff
+        language: system
+        files: '(\.go|^go\.mod|^go\.sum)$'
+        pass_filenames: false
+
       - id: jq-validate
         name: validate json (jq)
         entry: jq empty

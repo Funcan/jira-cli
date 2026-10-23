@@ -18,6 +18,8 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      - run: go mod tidy -diff
+
       - run: go test -cover ./...
 
   lint:
