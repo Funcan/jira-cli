@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -11,6 +12,8 @@ import (
 	"charm.land/lipgloss/v2"
 	"charm.land/lipgloss/v2/table"
 	"github.com/charmbracelet/colorprofile"
+	"github.com/charmbracelet/x/term"
+	"github.com/funcan/showmd"
 	"github.com/spf13/cobra"
 
 	jira "jira-cli/jira-lib"
@@ -63,6 +66,7 @@ display names), or a built-in list.`,
 
 		out := colorprofile.NewWriter(cmd.OutOrStdout(), os.Environ())
 		theme := newTheme(out.Profile)
+		md := markdownRenderer(cmd.OutOrStdout(), out.Profile)
 
 		key = theme.IssueKey.Hyperlink(c.BrowseURL(issue.Key)).Render(issue.Key)
 		fmt.Fprintln(out, key+"  "+theme.Summary.Render(fieldText(issue.Fields["summary"])))
@@ -103,7 +107,7 @@ display names), or a built-in list.`,
 		if desc := strings.TrimSpace(wikiToMarkdown(fieldText(issue.Fields["description"]))); desc != "" {
 			fmt.Fprintln(out)
 			fmt.Fprintln(out, theme.Heading.Render(issue.Names["description"]))
-			fmt.Fprintln(out, desc)
+			fmt.Fprintln(out, md(desc))
 		}
 
 		if len(comments) > 0 {
@@ -115,7 +119,7 @@ display names), or a built-in list.`,
 				}
 				fmt.Fprintln(out, theme.CommentAuthor.Render(comment.Author.DisplayName)+"  "+
 					theme.CommentDate.Render(comment.Created.Local().Format("2006-01-02 15:04")))
-				fmt.Fprintln(out, strings.TrimSpace(wikiToMarkdown(comment.Body)))
+				fmt.Fprintln(out, md(strings.TrimSpace(wikiToMarkdown(comment.Body))))
 			}
 		}
 		return nil
@@ -148,6 +152,21 @@ func showFieldIDs(issue *jira.RawIssue, names []string) []string {
 // often has Windows line endings.
 func wikiToMarkdown(wiki string) string {
 	return wiki2markdown2wiki.WikiToMarkdown(strings.ReplaceAll(wiki, "\r\n", "\n"))
+}
+
+// markdownRenderer returns a function that renders Markdown for w. It wraps
+// at the terminal's width, or not at all if w isn't a terminal.
+func markdownRenderer(w io.Writer, profile colorprofile.Profile) func(string) string {
+	t := showmd.Terminal{Color: profile, Hyperlinks: true}
+	wrap := false
+	if f, ok := w.(*os.File); ok {
+		if width, _, err := term.GetSize(f.Fd()); err == nil && width > 0 {
+			t.Width, wrap = width, true
+		}
+	}
+	return func(markdown string) string {
+		return strings.TrimRight(showmd.Render(markdown, t, showmd.Options{Wrap: &wrap}), "\n")
+	}
 }
 
 // fieldText renders a raw field value as text. It handles the shapes JIRA
